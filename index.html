@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Najaf Ali — Video Editor &amp; AI Video Producer</title>
+<meta name="description" content="Video editor and content creator. Social media video, real-estate films, AI video, motion animation, UGC ads and documentaries. 5+ years, 100+ clients.">
+<meta property="og:title" content="Najaf Ali — Video Editor &amp; AI Video Producer">
+<meta property="og:description" content="Social video, real-estate films, AI video, motion animation and UGC ads. 5+ years, 100+ clients.">
+<meta property="og:image" content="assets/najaf-portrait.jpg">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#05060b">
+<link rel="icon" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- deep sky: galaxy + starfield -->
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="torch" id="torch" aria-hidden="true"></div>
+
+<!-- cosmic whale, swims across on scroll -->
+<div class="whale-layer" id="whaleLayer" aria-hidden="true">
+  <span class="whale-aura"></span>
+  <svg class="whale" viewBox="0 0 540 280" fill="none">
+    <defs>
+      <linearGradient id="wbody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#8fa3b8" stop-opacity=".34"/>
+        <stop offset="46%"  stop-color="#5f7f86" stop-opacity=".30"/>
+        <stop offset="78%"  stop-color="#3f8a6c" stop-opacity=".30"/>
+        <stop offset="100%" stop-color="#e8ddc9" stop-opacity=".42"/>
+      </linearGradient>
+      <linearGradient id="wfin" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#e8ddc9" stop-opacity=".34"/>
+        <stop offset="100%" stop-color="#56d69b" stop-opacity=".26"/>
+      </linearGradient>
+      <radialGradient id="wsheen" cx="30%" cy="28%" r="70%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity=".22"/>
+        <stop offset="60%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="wglow" filterUnits="userSpaceOnUse" x="-300" y="-300" width="1200" height="900">
+        <feGaussianBlur stdDeviation="9" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <g>
+      <g class="w-body">
+        <path class="w-hull" fill="url(#wbody)" d="M46 104 C62 72 102 58 160 58 C224 58 302 76 358 104
+          C386 118 406 128 418 134 C406 142 386 152 358 166 C302 194 224 204 160 200
+          C102 196 62 172 46 138 C33 122 33 120 46 104 Z"/>
+        <path fill="url(#wsheen)" d="M46 104 C62 72 102 58 160 58 C224 58 302 76 358 104 C300 96 220 92 150 96 C104 99 68 101 46 104 Z"/>
+        <path class="w-dorsal" fill="url(#wbody)" d="M292 76 C302 56 320 46 336 46 C320 58 310 68 304 84 Z"/>
+        <path class="w-fin" fill="url(#wfin)" d="M168 178 C163 210 182 244 222 262 C199 230 187 204 190 180 Z"/>
+        <g stroke="#e8ddc9" stroke-opacity=".22" stroke-width="1.2" fill="none">
+          <path d="M52 132 C86 152 130 166 176 172"/>
+          <path d="M60 146 C94 164 134 176 172 182"/>
+          <path d="M50 118 C80 130 116 138 152 142"/>
+          <path d="M44 112 C70 122 104 130 140 134"/>
+        </g>
+        <circle cx="74" cy="100" r="4.4" fill="#f7f8fa" fill-opacity=".85"/>
+        <circle cx="72.5" cy="98.5" r="1.4" fill="#fff"/>
+        <g class="w-spark">
+          <circle cx="180" cy="92"  r="1.7" fill="#fff" fill-opacity=".55"/>
+          <circle cx="252" cy="104" r="1.9" fill="#e8ddc9" fill-opacity=".6"/>
+          <circle cx="318" cy="120" r="1.4" fill="#9bffcf" fill-opacity=".65"/>
+          <circle cx="214" cy="140" r="1.3" fill="#fff" fill-opacity=".45"/>
+          <circle cx="286" cy="86"  r="1.2" fill="#e8ddc9" fill-opacity=".5"/>
+        </g>
+      </g>
+
+      <g class="w-tail">
+        <path fill="url(#wbody)" d="M412 134 C440 114 476 100 520 92 C492 112 464 124 450 134
+          C464 144 484 158 506 180 C470 168 438 152 412 134 Z"/>
+      </g>
+
+      <g class="w-dust">
+        <circle cx="470" cy="150" r="2" fill="#9bffcf" fill-opacity=".5"/>
+        <circle cx="496" cy="128" r="1.4" fill="#e8ddc9" fill-opacity=".45"/>
+        <circle cx="512" cy="164" r="1.7" fill="#fff" fill-opacity=".35"/>
+        <circle cx="486" cy="184" r="1.2" fill="#9bffcf" fill-opacity=".4"/>
+      </g>
+    </g>
+  </svg>
+</div>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="mark" href="#top">Najaf Ali<span class="dot">.</span></a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#journey" data-open="work">Work</a>
+    <a href="#journey" data-open="experience">Experience</a>
+    <a href="#journey" data-open="services">Services</a>
+    <a href="#journey" data-open="packages">Packages</a>
+    <a href="#about">About</a>
+  </nav>
+  <button class="btn btn-solid nav-cta" type="button" data-cta>Start a project</button>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+</header>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="modal-bg" data-sheet-close></div>
+  <nav class="sheet-panel glass" aria-label="Mobile">
+    <button class="modal-close glass" type="button" data-sheet-close aria-label="Close menu">×</button>
+    <a href="#journey" data-open="work">My work</a>
+    <a href="#journey" data-open="experience">Experience</a>
+    <a href="#journey" data-open="process">How I work</a>
+    <a href="#journey" data-open="services">Services</a>
+    <a href="#journey" data-open="packages">Packages</a>
+    <a href="#about">About</a>
+    <button class="btn btn-solid sheet-cta" type="button" data-cta>Start a project</button>
+  </nav>
+</div>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-inner" id="heroZoom">
+      <figure class="eclipse" id="eclipse">
+        <span class="ring ring-1"></span>
+        <span class="ring ring-2"></span>
+        <span class="halo"></span>
+        <span class="portrait">
+          <img src="assets/najaf-portrait.jpg" alt="Portrait of Najaf Ali" width="900" height="1124">
+          <span class="sheen"></span>
+        </span>
+      </figure>
+      <div class="hero-copy">
+        <p class="status"><span class="status-dot" aria-hidden="true"></span> Available for new projects</p>
+        <p class="hero-role reveal">Video editor · AI video producer · Content creator</p>
+        <h1 class="hero-title"><span class="w">Cut</span> <span class="w">so</span> <span class="w">people</span><br><span class="w">actually</span> <span class="w">finish</span><br><span class="w">watching.</span></h1>
+        <p class="lede reveal d2">Five years of cutting social video, property films, AI production, motion animation and UGC — plus the parts most editors hand back: the thumbnail, the captions, the vertical cut, and the shot that never got filmed.</p>
+        <div class="hero-actions reveal d3">
+          <a class="btn btn-solid" href="#journey" data-open="work">See the work</a>
+          <a class="btn btn-glass" href="#contact">Get in touch</a>
+        </div>
+      </div>
+    </div>
+
+    <dl class="stats glass reveal d4">
+      <div><dt data-count="100" data-suffix="+">100+</dt><dd>Clients served</dd></div>
+      <div><dt data-count="5" data-suffix="+">5+</dt><dd>Years editing</dd></div>
+      <div><dt data-count="7" data-suffix="">7</dt><dd>Content verticals</dd></div>
+      <div><dt data-count="3" data-suffix="+">3+</dt><dd>Studios &amp; agencies</dd></div>
+    </dl>
+
+    <p class="strip-note" id="stripNote"></p>
+    <div class="strip" id="strip" aria-label="Recent work">
+      <div class="strip-row"><div class="strip-track" id="stripTall"></div></div>
+      <div class="strip-row"><div class="strip-track rev" id="stripWide"></div></div>
+    </div>
+
+    <a class="scroll-cue" href="#journey" data-open="work" aria-label="Go to the work">
+      <span class="cue-rail"><span class="cue-dot"></span></span>
+      <span class="cue-text">Follow the line</span>
+    </a>
+  </section>
+
+  <!-- THE LINE -->
+  <section class="band" id="journey">
+    <div class="wrap">
+      <div class="band-head reveal">
+        <h2>Follow the line</h2>
+        <p>Tap any point to open it. Tap it again to close.</p>
+      </div>
+
+      <div class="tree-stage">
+      <div class="tree" id="tree">
+        <svg class="tree-svg" id="treeSvg" aria-hidden="true"></svg>
+        <div class="nodes">
+
+          <section class="node" data-node="work" data-side="right">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">My work</span><span class="node-hint">Pick a category to watch</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves" id="workLeaves"><!-- built from videos.js --></ul>
+            </div>
+          </section>
+
+          <section class="node" data-node="experience" data-side="left">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">My experience</span><span class="node-hint">Studios, agencies and 100+ clients</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves">
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>SixDees</strong><span>Video editor — long and short-form across client campaigns, delivered platform-ready.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>9T9 Solutions</strong><span>Video editor — branded and marketing video end to end, brief to finished cut.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>CCC Site Development</strong><span>Video editor — company and project post-production, cut to narrative and spec.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Freelance — Upwork &amp; direct</strong><span>100+ clients. Full pipeline alone: ingest, edit, motion, grade, sound, captions, delivery.</span></div></li>
+                </ul>
+            </div>
+          </section>
+
+          <section class="node" data-node="process" data-side="right">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">How I work</span><span class="node-hint">Five stages, agreed up front</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves">
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>01 · Brief</strong><span>Goal, audience, platform, references and deadline settled first.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>02 · Selects</strong><span>Footage organised, best takes pulled, structure mapped to the script.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>03 · Rough cut</strong><span>Story and pacing locked. You approve the shape before any polish.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>04 · Polish</strong><span>Motion graphics, grade, sound design, captions, thumbnails and titles.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>05 · Deliver</strong><span>Every aspect ratio you need, plus revisions until it's right.</span></div></li>
+                </ul>
+            </div>
+          </section>
+
+          <section class="node" data-node="services" data-side="left">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">Services</span><span class="node-hint">Everything I take on</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves">
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>YouTube channel editing</strong><span>Long-form cuts built for watch time.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Documentary editing</strong><span>Interview assembly, archive, narrative structure.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Real-estate video</strong><span>Property tours, listing films, agent branding.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Ads &amp; commercials</strong><span>Hooks, product cutdowns, campaign variants.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>UGC ad production</strong><span>Creator-style ads and testimonial edits.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Shorts, Reels &amp; TikTok</strong><span>Vertical cuts with captions and pacing.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>AI video production</strong><span>Generated scenes, b-roll and full concepts.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Graphic design</strong><span>Thumbnails, titles, key art, brand assets.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Motion &amp; look</strong><span>Motion graphics, colour grading, titles and lower thirds.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Audio &amp; delivery</strong><span>Sound design, mixing, captions, multi-aspect delivery.</span></div></li>
+                </ul>
+            </div>
+          </section>
+
+          <section class="node" data-node="tools" data-side="right">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">Tools &amp; AI</span><span class="node-hint">What the work is built in</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves">
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Editing suite</strong><span>Premiere Pro · After Effects · CapCut · Filmora · Audition · Photoshop · Illustrator</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Higgsfield</strong><span>Cinematic generation and camera-controlled shots for ads and b-roll.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Kling AI</strong><span>Motion-heavy short-form clips and character work.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Seedance</strong><span>Multi-shot sequences with consistent characters and native audio.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Gemini Omni</strong><span>Reference-driven generation to match existing footage.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>ChatGPT</strong><span>Scripting, hooks, shot lists and caption passes.</span></div></li>
+                </ul>
+            </div>
+          </section>
+
+          <section class="node" data-node="delivery" data-side="left">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">What you get</span><span class="node-hint">Formats, handover, revisions</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves">
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Aspect ratios</strong><span>16:9, 9:16, 1:1 and 4:5 from a single edit.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Captions</strong><span>Burned-in or .SRT, styled to your brand.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Resolution</strong><span>Up to 4K, exported per platform.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Handover</strong><span>Drive, Dropbox or Frame.io — your choice.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Revisions</strong><span>Structured rounds, no surprise scope.</span></div></li>
+                </ul>
+            </div>
+          </section>
+
+          <section class="node" data-node="packages" data-side="right">
+            <div class="node-inner">
+              <button class="node-btn glass" type="button" aria-expanded="false">
+                <span class="node-dot"></span>
+                <span class="node-text"><span class="node-label">Packages &amp; hiring</span><span class="node-hint">How to book the work</span></span>
+                <span class="node-sign" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="branch" data-branch>
+                <ul class="leaves">
+                  <li><a class="leaf leaf-link" href="https://www.upwork.com/freelancers/~01866dc22a7f97286e" target="_blank" rel="noopener"><span class="leaf-dot"></span><strong>Fixed packages on Upwork</strong><span>Ready-made packages with clear scope, plus verified client reviews.</span><span class="count">View on Upwork ↗</span></a></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Project-based</strong><span>One film, one campaign or one batch of cuts — quoted before we start.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Monthly retainer</strong><span>A set number of videos every month for creators and brands.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Full-time or part-time</strong><span>Embedded with your team, remote, overlapping US &amp; EU hours.</span></div></li>
+                  <li class="leaf"><span class="leaf-dot"></span><div><strong>Revisions &amp; handover</strong><span>Structured rounds, no surprise scope. Project files on request.</span></div></li>
+                </ul>
+            </div>
+          </section>
+
+        </div>
+      </div>
+      </div>
+
+      <!-- videos open here, one category at a time -->
+      <div class="reel" id="catView" hidden>
+        <div class="reel-head">
+          <button class="back glass" id="backBtn" type="button"><span class="arrow" aria-hidden="true"></span> Close videos</button>
+          <div>
+            <h3 id="reelTitle"></h3>
+            <p id="reelBlurb"></p>
+          </div>
+        </div>
+        <div class="videos" id="videoGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="band alt" id="about">
+    <div class="wrap about">
+      <figure class="about-photo reveal" id="aboutPhoto">
+        <span class="frame-glow" aria-hidden="true"></span>
+        <span class="photo-wrap">
+          <img src="assets/najaf-gallery.jpg" alt="Najaf Ali standing in a gallery" width="900" height="1350" loading="lazy">
+          <span class="photo-sheen" aria-hidden="true"></span>
+          <span class="photo-grid" aria-hidden="true"></span>
+        </span>
+        <span class="chip chip-1 glass"><strong>100+</strong> clients</span>
+        <span class="chip chip-2 glass"><strong>5+</strong> years</span>
+        <span class="chip chip-3 glass"><strong>4K</strong> delivery</span>
+      </figure>
+      <div class="about-copy">
+        <h2 class="reveal">About</h2>
+        <p class="big reveal d1">I take raw footage, a script, a voiceover or just an idea, and turn it into something built to hold attention and say one thing clearly.</p>
+        <p class="reveal d2">Five years and more than a hundred clients — creators, founders, agencies, real-estate brands, documentary and NGO teams. I own the full post-production workflow, produce AI-generated video when a shoot isn't the answer or the budget, and handle the design around it.</p>
+        <div class="facts glass reveal d3">
+          <div><span>Education</span><p>BS Mass Communication (in progress) · ICS, Intermediate in Computer Science</p></div>
+          <div><span>Languages</span><p>English and Urdu · Overlap with US &amp; EU hours</p></div>
+          <div><span>Working with you</span><p>Full-time, part-time, project-based or monthly retainer · Remote worldwide</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="band contact" id="contact">
+    <div class="wrap">
+      <h2 class="reveal">Send the raw material and the goal.</h2>
+      <p class="big reveal d1">I'll handle everything between that and the finished file.</p>
+      <div class="contact-grid">
+        <a class="glass reveal" href="mailto:najaf9159@gmail.com"><span>Email</span><strong>najaf9159@gmail.com</strong></a>
+        <a class="glass reveal d1" href="tel:+923186064612"><span>Phone &amp; WhatsApp</span><strong>+92 318 6064612</strong></a>
+        <a class="glass reveal d2" href="https://www.upwork.com/freelancers/~01866dc22a7f97286e" target="_blank" rel="noopener"><span>Portfolio &amp; reviews</span><strong>Upwork profile</strong></a>
+        <a class="glass reveal d3" href="assets/Najaf-Ali-CV.pdf" download><span>Full CV</span><strong>Download PDF</strong></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="quickbar">
+  <a class="qb-btn" href="https://wa.me/923186064612" target="_blank" rel="noopener">WhatsApp</a>
+  <a class="qb-btn qb-solid" href="mailto:najaf9159@gmail.com">Email me</a>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <span>Najaf Ali<span class="dot">.</span> Video editor · AI video producer · Content creator</span>
+    <span class="foot-right">Islamabad, Pakistan — working remote worldwide</span>
+  </div>
+</footer>
+
+<div class="modal" id="ctaModal" hidden>
+  <div class="modal-bg" data-cta-close></div>
+  <div class="cta-box glass" role="dialog" aria-modal="true" aria-label="Contact Najaf Ali">
+    <button class="modal-close glass" type="button" data-cta-close aria-label="Close">×</button>
+    <p class="cta-kicker">Start a project</p>
+    <h3>Send the brief — I'll reply the same day.</h3>
+    <div class="cta-lines">
+      <div class="cta-row">
+        <a href="mailto:najaf9159@gmail.com"><span>Email</span><strong>najaf9159@gmail.com</strong></a>
+        <button class="copy" type="button" data-copy="najaf9159@gmail.com" aria-label="Copy email address">Copy</button>
+      </div>
+      <div class="cta-row">
+        <a href="tel:+923186064612"><span>Phone &amp; WhatsApp</span><strong>+92 318 6064612</strong></a>
+        <button class="copy" type="button" data-copy="+923186064612" aria-label="Copy phone number">Copy</button>
+      </div>
+    </div>
+    <p class="cta-note">Or message on WhatsApp — same number.</p>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-label="Video player">
+    <button class="modal-close glass" type="button" data-close aria-label="Close video">×</button>
+    <button class="nav-vid prev" id="prevVid" type="button" aria-label="Previous video">‹</button>
+    <button class="nav-vid next" id="nextVid" type="button" aria-label="Next video">›</button>
+    <div class="frame" id="frame"></div>
+    <div class="modal-foot"><p class="modal-title" id="modalTitle"></p><a class="modal-yt" id="modalYt" href="#" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+  </div>
+</div>
+
+<script src="videos.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
