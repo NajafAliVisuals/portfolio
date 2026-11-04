@@ -674,11 +674,29 @@
   data.forEach(function (cat) { items(cat).forEach(function (v) { pool.push(v); }); });
   var featured = pool.slice();
 
-  function thumbFor(v, small) {
-    // Shorts have a vertical thumbnail under oardefault; fall back if it is missing.
-    // The showcase rows use the smaller file — 30 of them load at once.
-    if (v.vertical) return "https://i.ytimg.com/vi/" + v.id + "/oardefault.jpg";
-    return "https://i.ytimg.com/vi/" + v.id + (small ? "/mqdefault.jpg" : "/hqdefault.jpg");
+  // Loads a YouTube cover and keeps trying other sizes until one works.
+  // YouTube sometimes answers a missing size with a small grey placeholder
+  // (120px wide) instead of an error — that counts as missing too.
+  // If nothing works, the card shows a styled cover with the title instead of black.
+  function setThumb(img, v, small) {
+    var base = "https://i.ytimg.com/vi/" + v.id + "/";
+    var list = v.vertical
+      ? ["oardefault.jpg", "hqdefault.jpg", "mqdefault.jpg", "0.jpg"]
+      : (small ? ["mqdefault.jpg", "hqdefault.jpg", "0.jpg"] : ["hqdefault.jpg", "mqdefault.jpg", "0.jpg"]);
+    var i = 0;
+    function next() {
+      i++;
+      if (i < list.length) { img.src = base + list[i]; return; }
+      img.style.display = "none";
+      var host = img.parentNode;
+      if (host) { host.classList.add("no-thumb"); host.setAttribute("data-label", v.title || ""); }
+    }
+    img.addEventListener("error", next);
+    img.addEventListener("load", function () {
+      if (img.naturalWidth && img.naturalWidth <= 120) next();
+      else img.classList.add("loaded");
+    });
+    img.src = base + list[0];
   }
 
   function stripCard(v, cls) {
@@ -688,12 +706,9 @@
     b.setAttribute("aria-label", "Play " + v.title);
     b.title = v.title;
     var img = document.createElement("img");
-    img.loading = "lazy"; img.decoding = "async"; img.alt = "";
-    img.src = thumbFor(v, true);
-    img.addEventListener("error", function () {
-      if (img.src.indexOf("oardefault") > -1) img.src = "https://i.ytimg.com/vi/" + v.id + "/hqdefault.jpg";
-    });
+    img.decoding = "async"; img.alt = "";          // no lazy-load: the row moves, lazy covers never loaded
     b.appendChild(img);
+    setThumb(img, v, true);
     b.addEventListener("click", function () { playlist = featured; openModal(v.id, v.title); });
     return b;
   }
@@ -766,13 +781,9 @@
         card.type = "button";
         card.className = "vcard" + (i >= cap ? " is-more" : "");
         if (!reduce && i < cap) card.style.animation = "rise .6s cubic-bezier(.22,.8,.24,1) both " + (.05 * i) + "s";
-        card.innerHTML = '<span class="thumb"><img loading="lazy" decoding="async" alt="" src="' + thumbFor(v) +
-          '"><span class="play" aria-hidden="true"></span></span>' +
+        card.innerHTML = '<span class="thumb"><img decoding="async" alt=""><span class="play" aria-hidden="true"></span></span>' +
           '<span class="vtitle">' + v.title + "</span>";
-        var im = card.querySelector("img");
-        im.addEventListener("error", function () {
-          if (im.src.indexOf("oardefault") > -1) im.src = "https://i.ytimg.com/vi/" + v.id + "/hqdefault.jpg";
-        });
+        setThumb(card.querySelector("img"), v, false);
         card.addEventListener("click", function () { openModal(v.id, v.title); });
         grid.appendChild(card);
       });
