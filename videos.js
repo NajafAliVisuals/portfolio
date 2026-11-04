@@ -29,7 +29,7 @@
    ============================================================ */
 const INTRO = {
   url: "https://youtu.be/9kE3oR26QS8",
-  title: "Once You Understand Debt — full edit for Veen Vox",
+  title: "Najaf Ali — Introduction",
   label: "Start here"
 };
 
