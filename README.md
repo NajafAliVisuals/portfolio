@@ -12,6 +12,11 @@ assets/         portrait, gallery photo, CV, favicon
 .nojekyll       tells GitHub Pages to serve the files as-is
 ```
 
+## 0. The intro video
+
+The big video under your photo comes from `INTRO` at the top of `videos.js`.
+Paste a new link and title there to change it. It plays right inside the page.
+
 ## 1. Add your YouTube links
 
 Open `videos.js`. Each category has a `videos` list. Add one line per video:

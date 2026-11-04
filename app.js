@@ -4,7 +4,9 @@
 (function () {
   "use strict";
 
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Animations always run. (Before, they all switched off when Windows/Mac had
+  // "animation effects" turned off — which made the site look frozen.)
+  var reduce = false;
   var lite = (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
              (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
              window.innerWidth < 760;
@@ -955,6 +957,36 @@
     else if (sheet && !sheet.hidden) closeSheet();
     else if (openId) closeCat();
   });
+
+  /* =========================================================
+     INTRO VIDEO — plays right inside the page
+     ========================================================= */
+  (function () {
+    var box = document.getElementById("intro");
+    if (!box || typeof INTRO === "undefined" || !INTRO) return;
+    var id = youtubeId(INTRO.url);
+    if (!id) return;
+    var title = INTRO.title || "Intro";
+    document.getElementById("introTitle").textContent = title;
+    if (INTRO.label) document.getElementById("introLabel").textContent = INTRO.label;
+    var thumb = document.getElementById("introThumb");
+    thumb.src = "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg";
+    thumb.addEventListener("error", function () {
+      if (thumb.src.indexOf("maxres") > -1) thumb.src = "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+    });
+    box.hidden = false;
+    document.getElementById("introPlayer").addEventListener("click", function () {
+      if (location.protocol === "file:") { window.open("https://www.youtube.com/watch?v=" + id, "_blank"); return; }
+      var src = "https://www.youtube-nocookie.com/embed/" + id +
+        "?autoplay=1&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&origin=" + encodeURIComponent(location.origin);
+      var f = document.createElement("iframe");
+      f.src = src; f.title = title;
+      f.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+      f.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+      f.setAttribute("allowfullscreen", "");
+      this.replaceWith(f);
+    });
+  })();
 
   /* =========================================================
      boot

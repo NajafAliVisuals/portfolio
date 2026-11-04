@@ -23,12 +23,27 @@
    works far better than "Social edit — 03".
    ============================================================ */
 
+/* ============================================================
+   INTRO VIDEO — the big video at the top of the page, under your photo.
+   To change it, paste a new YouTube link and title here.
+   ============================================================ */
+const INTRO = {
+  url: "https://youtu.be/9kE3oR26QS8",
+  title: "Once You Understand Debt — full edit for Veen Vox",
+  label: "Start here"
+};
+
 const WORK = [
   {
     id: "social",
     name: "Social media videos",
     blurb: "Feed-first edits, Shorts, Reels and long-form — including AI-generated pieces.",
     videos: [
+      { url: "https://www.youtube.com/watch?v=dYm-4t_wx6A", title: "Long-form edit — new" },
+      { url: "https://youtube.com/shorts/SrFsBqcDr8E", title: "Short — new 01" },
+      { url: "https://youtube.com/shorts/lhLC8rV7KCw", title: "Short — new 02" },
+      { url: "https://youtube.com/shorts/q2j57Y6ZzCw", title: "Short — new 03" },
+      { url: "https://www.youtube.com/shorts/n_PKaSt9at4", title: "Short — new 04" },
       { url: "https://youtu.be/1vIdOyYMjK4", title: "Social edit — 01" },
       { url: "https://youtu.be/HauYL0c4FQ4", title: "Social edit — 02" },
       { url: "https://youtu.be/R5cwGRul9xI", title: "Social edit — 03" },
