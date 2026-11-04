@@ -643,7 +643,7 @@
       var id = youtubeId(v.url);
       if (!id || seen[id]) return;               // never show the same link twice
       seen[id] = 1;
-      out.push({ id: id, title: v.title || cat.name, vertical: isVertical(v) });
+      out.push({ id: id, title: v.title || cat.name, vertical: isVertical(v), cover: v.cover });
     });
     return out;
   }
@@ -674,29 +674,57 @@
   data.forEach(function (cat) { items(cat).forEach(function (v) { pool.push(v); }); });
   var featured = pool.slice();
 
-  // Loads a YouTube cover and keeps trying other sizes until one works.
-  // YouTube sometimes answers a missing size with a small grey placeholder
-  // (120px wide) instead of an error — that counts as missing too.
-  // If nothing works, the card shows a styled cover with the title instead of black.
+  // Loads a YouTube cover and keeps trying other files until a real one shows.
+  // Many Shorts have no "hqdefault" cover — YouTube answers with a grey
+  // placeholder — but always have a real frame at "hq2". A cover you set
+  // yourself in videos.js (cover: "assets/my-cover.jpg") always wins.
+  // If nothing works, the card shows a styled cover with the title instead.
   function setThumb(img, v, small) {
     var base = "https://i.ytimg.com/vi/" + v.id + "/";
     var list = v.vertical
-      ? ["oardefault.jpg", "hqdefault.jpg", "mqdefault.jpg", "0.jpg"]
-      : (small ? ["mqdefault.jpg", "hqdefault.jpg", "0.jpg"] : ["hqdefault.jpg", "mqdefault.jpg", "0.jpg"]);
+      ? [base + "oardefault.jpg", base + "hq2.jpg", base + "hqdefault.jpg", base + "0.jpg"]
+      : (small ? [base + "mqdefault.jpg", base + "hq2.jpg", base + "hqdefault.jpg", base + "0.jpg"]
+               : [base + "hqdefault.jpg", base + "hq2.jpg", base + "mqdefault.jpg", base + "0.jpg"]);
+    if (v.cover) list.unshift(v.cover);
     var i = 0;
     function next() {
       i++;
-      if (i < list.length) { img.src = base + list[i]; return; }
+      if (i < list.length) { img.src = list[i]; return; }
       img.style.display = "none";
       var host = img.parentNode;
       if (host) { host.classList.add("no-thumb"); host.setAttribute("data-label", v.title || ""); }
     }
     img.addEventListener("error", next);
     img.addEventListener("load", function () {
-      if (img.naturalWidth && img.naturalWidth <= 120) next();
-      else img.classList.add("loaded");
+      if (img.naturalWidth && img.naturalWidth <= 120) { next(); return; }
+      if (v.cover && i === 0) return;
+      isPlaceholder(img.src, function (grey) { if (grey) next(); });
     });
-    img.src = base + list[0];
+    img.src = list[0];
+  }
+
+  // YouTube's placeholder is flat grey. Look at a few pixels: if every one is
+  // grey (no colour at all), skip to the next file. If the browser won't let
+  // us look, keep the image as it is.
+  var greyCache = {};
+  function isPlaceholder(src, done) {
+    if (src in greyCache) { done(greyCache[src]); return; }
+    var probe = new Image();
+    probe.crossOrigin = "anonymous";
+    probe.onload = function () {
+      try {
+        var c = document.createElement("canvas"); c.width = 24; c.height = 18;
+        var g = c.getContext("2d"); g.drawImage(probe, 0, 0, 24, 18);
+        var d = g.getImageData(0, 0, 24, 18).data, colour = 0;
+        for (var k = 0; k < d.length; k += 4) {
+          if (Math.max(d[k], d[k + 1], d[k + 2]) - Math.min(d[k], d[k + 1], d[k + 2]) > 14) colour++;
+        }
+        greyCache[src] = colour < 6;
+      } catch (e) { greyCache[src] = false; }
+      done(greyCache[src]);
+    };
+    probe.onerror = function () { greyCache[src] = false; done(false); };
+    probe.src = src;
   }
 
   function stripCard(v, cls) {

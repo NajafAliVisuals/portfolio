@@ -16,6 +16,10 @@
    vertically (9:16), everything else 16:9. If a normal link is really a
    vertical video, add  vertical: true  to that line.
 
+   OWN COVER: if YouTube shows a grey cover for a video, put your own
+   picture in the assets folder and add it to that line:
+        { url: "...", title: "...", cover: "assets/my-cover.jpg" },
+
    The same link added twice is only ever shown once.
    A category with no videos shows as "Links coming soon".
 
@@ -39,11 +43,11 @@ const WORK = [
     name: "Social media videos",
     blurb: "Feed-first edits, Shorts, Reels and long-form — including AI-generated pieces.",
     videos: [
-      { url: "https://www.youtube.com/watch?v=dYm-4t_wx6A", title: "Long-form edit — new" },
-      { url: "https://youtube.com/shorts/SrFsBqcDr8E", title: "Short — new 01" },
-      { url: "https://youtube.com/shorts/lhLC8rV7KCw", title: "Short — new 02" },
-      { url: "https://youtube.com/shorts/q2j57Y6ZzCw", title: "Short — new 03" },
-      { url: "https://www.youtube.com/shorts/n_PKaSt9at4", title: "Short — new 04" },
+      { url: "https://www.youtube.com/watch?v=dYm-4t_wx6A", title: "Once You Understand Debt — Veen Vox" },
+      { url: "https://youtube.com/shorts/SrFsBqcDr8E", title: "Podcast reel" },
+      { url: "https://youtube.com/shorts/lhLC8rV7KCw", title: "B360" },
+      { url: "https://youtube.com/shorts/q2j57Y6ZzCw", title: "Deer Island" },
+      { url: "https://www.youtube.com/shorts/n_PKaSt9at4", title: "Thrown in a Well by His Own Brothers — SMALLNUNU" },
       { url: "https://youtu.be/1vIdOyYMjK4", title: "Social edit — 01" },
       { url: "https://youtu.be/HauYL0c4FQ4", title: "Social edit — 02" },
       { url: "https://youtu.be/R5cwGRul9xI", title: "Social edit — 03" },
