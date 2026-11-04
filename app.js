@@ -30,256 +30,151 @@
   measure();
 
   /* =========================================================
-     SKY — 3D spiral galaxy, nebula, layered stars
+     NATURE — falling leaves + sunlit motes by day, fireflies by night
      ========================================================= */
-  var sky = document.getElementById("sky");
-  var ctx = null, w = 0, h = 0, dpr = 1;
-  var stars = [], bright = [], gal = [], neb = [], shots = [], nextShot = 5000, R = 400;
-  var sprite = {};
-
-  function makeSprite(rgb) {
-    var s = document.createElement("canvas"); s.width = s.height = 64;
-    var c = s.getContext("2d");
-    var g = c.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0, "rgba(" + rgb + ",1)");
-    g.addColorStop(.22, "rgba(" + rgb + ",.55)");
-    g.addColorStop(.55, "rgba(" + rgb + ",.12)");
-    g.addColorStop(1, "rgba(" + rgb + ",0)");
-    c.fillStyle = g; c.fillRect(0, 0, 64, 64);
-    return s;
-  }
-
+  var canvas = document.getElementById("natureCanvas");
+  var ctx = canvas && canvas.getContext ? canvas.getContext("2d") : null;
+  var w = 0, h = 0, dpr = 1, leaves = [], flies = [], glowDay = null, glowNight = null;
+  var mouse = { x: -999, y: -999, vx: 0, vy: 0 }, lastScrollY = window.pageYOffset || 0;
   var rand = function (a, b) { return a + Math.random() * (b - a); };
+  var DAY_LEAF = ["#7ea86a", "#a3b865", "#c7a35a", "#5e8e5c", "#b9c88c", "#d49a63"];
+  var NIGHT_LEAF = ["#2f4a37", "#3b5a43", "#4a5f3e", "#33463a"];
 
-  function seedSky() {
+  function glowSprite(rgb) {
+    var c = document.createElement("canvas"); c.width = c.height = 48;
+    var g = c.getContext("2d"), r = g.createRadialGradient(24, 24, 0, 24, 24, 24);
+    r.addColorStop(0, "rgba(" + rgb + ",1)"); r.addColorStop(.25, "rgba(" + rgb + ",.6)");
+    r.addColorStop(.6, "rgba(" + rgb + ",.12)"); r.addColorStop(1, "rgba(" + rgb + ",0)");
+    g.fillStyle = r; g.fillRect(0, 0, 48, 48); return c;
+  }
+  function newLeaf(top) {
+    var z = rand(.55, 1);
+    return {
+      x: rand(-40, w + 40), y: top ? rand(-h * .3, -20) : rand(-20, h),
+      z: z, s: rand(9, 17) * z, vy: rand(.35, .75) * z, sway: rand(18, 46), ph: rand(0, 6.28),
+      fr: rand(.0006, .0013), rot: rand(0, 6.28), vr: rand(-.012, .012), flip: rand(0, 6.28), vf: rand(.012, .03),
+      ci: Math.floor(Math.random() * 6), dx: 0
+    };
+  }
+  function newFly() {
+    return { x: rand(0, w), y: rand(h * .15, h), a: rand(0, 6.28), sp: rand(.15, .45), ph: rand(0, 6.28),
+             blink: rand(.0008, .0022), r: rand(10, 20), turn: rand(-.02, .02) };
+  }
+  function seedNature() {
     w = window.innerWidth; h = window.innerHeight;
-    dpr = Math.min(window.devicePixelRatio || 1, lite ? 1.5 : 2);
-    sky.width = w * dpr; sky.height = h * dpr;
-    sky.style.width = w + "px"; sky.style.height = h + "px";
+    dpr = Math.min(window.devicePixelRatio || 1, lite ? 1.25 : 2);
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.width = w + "px"; canvas.style.height = h + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    galScale = lite ? .6 : .8;
-    galCan = document.createElement("canvas");
-    galCan.width = Math.round(w * galScale); galCan.height = Math.round(h * galScale);
-    galCtx = galCan.getContext("2d");
-    galCtx.setTransform(galScale, 0, 0, galScale, 0, 0);
-    galSp = -1;
-
-    sprite.cool = makeSprite("214,230,255");
-    sprite.warm = makeSprite("255,231,192");
-    sprite.mint = makeSprite("150,240,200");
-    sprite.white = makeSprite("255,255,255");
-
-    // ---- stars, three depths
-    var L = [
-      { n: .54, size: [1.1, 2.2], alpha: [.16, .40], par: .05, drift: .005 },
-      { n: .32, size: [1.8, 3.4], alpha: [.24, .58], par: .13, drift: .012 },
-      { n: .14, size: [3.0, 5.4], alpha: [.38, .85], par: .28, drift: .022 }
-    ];
-    var total = Math.max(90, Math.min(280, Math.round((w * h) / (lite ? 11000 : 7600))));
-    stars = [];
-    L.forEach(function (l) {
-      for (var i = 0, c = Math.round(total * l.n); i < c; i++) {
-        stars.push({
-          x: Math.random() * w, y: Math.random() * (h * 1.7),
-          s: rand(l.size[0], l.size[1]), a: rand(l.alpha[0], l.alpha[1]),
-          par: l.par, drift: l.drift, ph: Math.random() * 6.28, sp: rand(.3, 1),
-          tex: Math.random() < .22 ? sprite.warm : sprite.cool
-        });
-      }
-    });
-    bright = [];
-    for (var j = 0; j < 7; j++) {
-      bright.push({ x: Math.random() * w, y: rand(h * .05, h * 1.5), s: rand(9, 16), par: rand(.16, .32), ph: Math.random() * 6.28, tex: Math.random() < .5 ? sprite.warm : sprite.white });
-    }
-
-    // ---- galaxy
-    R = Math.min(w, h) * .78;
-    var count = Math.max(420, Math.min(1100, Math.round((w * h) / 1900)));
-    if (lite) count = Math.round(count * .45);
-    gal = [];
-    var arms = 3;
-    for (var k = 0; k < count; k++) {
-      var t = Math.pow(Math.random(), .58);
-      var arm = Math.floor(Math.random() * arms);
-      var spread = (1 - t) * 1.15 + .1;
-      gal.push({
-        t: t,
-        a: arm * (6.283 / arms) + t * 3.4 + (Math.random() - .5) * spread,
-        r: t * R * (1 + (Math.random() - .5) * .05),
-        z: (Math.random() - .5) * R * .045 * (1.2 - t),
-        s: rand(1.4, 4.2) * (t < .18 ? 1.6 : 1),
-        o: rand(.20, .70) * (t < .2 ? 1.25 : 1 - t * .3),
-        ph: Math.random() * 6.28
-      });
-    }
-    // ---- nebula clouds inside the disc
-    neb = [];
-    for (var n = 0; n < 9; n++) {
-      var nt = rand(.18, .92);
-      neb.push({
-        t: nt, a: Math.random() * 6.28, r: nt * R,
-        rad: rand(R * .10, R * .26),
-        col: n % 3 === 0 ? "120,220,175" : (n % 3 === 1 ? "232,221,201" : "150,185,235"),
-        o: rand(.05, .12)
-      });
-    }
+    var nl = lite ? 7 : (w < 760 ? 8 : 15), nf = lite ? 14 : (w < 760 ? 16 : 30);
+    leaves = []; flies = [];
+    for (var i = 0; i < nl; i++) leaves.push(newLeaf(false));
+    for (var j = 0; j < nf; j++) flies.push(newFly());
+    if (!glowDay) { glowDay = glowSprite("255,226,160"); glowNight = glowSprite("200,255,150"); }
   }
-
-  function galaxyColor(t) {
-    if (t < .17) return sprite.warm;
-    if (t < .5) return sprite.white;
-    if (t < .75) return sprite.cool;
-    return sprite.mint;
-  }
-
-  var galCan = null, galCtx = null, galScale = 1, galFrame = 0, galSp = -1;
-
-  function paintGalaxy(time) {
-    var rot = time * .000022 + sp * .95;
-    var tilt = 1.02, st = Math.sin(tilt), ct = Math.cos(tilt);
-    var zoom = 1 + sp * 1.15;
-    var f = 1100;
-    var cx = w * (.70 - sp * .32), cy = h * (.30 + sp * .30);
-
-    var ctx = galCtx;
-    ctx.clearRect(0, 0, w, h);
+  function drawLeaf(l, col, alpha) {
     ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-
-    // core bloom
-    var coreR = R * .32 * zoom;
-    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR);
-    g.addColorStop(0, "rgba(255,240,208,.30)");
-    g.addColorStop(.28, "rgba(206,222,244,.12)");
-    g.addColorStop(1, "rgba(120,190,160,0)");
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.ellipse(cx, cy, coreR, coreR * .40, -.30, 0, 6.283); ctx.fill();
-
-    // nebula
-    for (var i = 0; i < neb.length; i++) {
-      var nb = neb[i];
-      var na = nb.a + rot * (1.2 - nb.t * .5);
-      var nx = Math.cos(na) * nb.r, ny0 = Math.sin(na) * nb.r;
-      var ny = ny0 * ct;
-      var nz = ny0 * st;
-      var nsc = (f / (f + nz)) * zoom;
-      var px = cx + nx * nsc * .92, py = cy + ny * nsc;
-      var rad = nb.rad * nsc;
-      var ng = ctx.createRadialGradient(px, py, 0, px, py, rad);
-      ng.addColorStop(0, "rgba(" + nb.col + "," + nb.o + ")");
-      ng.addColorStop(1, "rgba(" + nb.col + ",0)");
-      ctx.fillStyle = ng;
-      ctx.beginPath(); ctx.arc(px, py, rad, 0, 6.283); ctx.fill();
-    }
-
-    // stars of the disc
-    for (var k = 0; k < gal.length; k++) {
-      var q = gal[k];
-      var a = q.a + rot * (1.3 - q.t * .6);
-      var x0 = Math.cos(a) * q.r, y0 = Math.sin(a) * q.r;
-      var y1 = y0 * ct - q.z * st, z1 = y0 * st + q.z * ct;
-      var sc = (f / (f + z1)) * zoom;
-      var x = cx + x0 * sc * .92, y = cy + y1 * sc;
-      if (x < -40 || x > w + 40 || y < -40 || y > h + 40) continue;
-      var tw = reduce ? 1 : .78 + .22 * Math.sin(time / 2100 + q.ph);
-      var size = Math.max(1.2, q.s * sc);
-      ctx.globalAlpha = Math.min(1, q.o * tw * Math.min(1.5, sc));
-      ctx.drawImage(galaxyColor(q.t), x - size / 2, y - size / 2, size, size);
-    }
-    ctx.globalAlpha = 1;
+    ctx.translate(l.x + l.dx, l.y);
+    ctx.rotate(l.rot);
+    ctx.scale(Math.cos(l.flip) * l.s, l.s);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.moveTo(-1, 0);
+    ctx.bezierCurveTo(-.55, -.62, .5, -.58, 1.05, 0);
+    ctx.bezierCurveTo(.5, .58, -.55, .62, -1, 0);
+    ctx.fill();
+    ctx.globalAlpha = alpha * .45;
+    ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = .06;
+    ctx.beginPath(); ctx.moveTo(-1.2, 0); ctx.lineTo(.95, 0); ctx.stroke();
     ctx.restore();
   }
-
-  function drawGalaxy(time) {
-    if (!galCan) return;
-    // repaint the galaxy only when it has actually moved — it is the expensive part
-    galFrame++;
-    if (galFrame % 3 === 0 || Math.abs(sp - galSp) > .004) { paintGalaxy(time); galSp = sp; }
-    ctx.drawImage(galCan, 0, 0, w, h);
-  }
-
-  function wrapY(y, off) { var span = h * 1.7, v = (y - off) % span; return v < 0 ? v + span : v; }
-
-  function drawSky(time) {
+  function stepNature(time) {
+    if (!ctx) return;
+    var night = document.documentElement.getAttribute("data-theme") === "dark";
+    var sy = window.pageYOffset || 0, ds = sy - lastScrollY; lastScrollY = sy;
+    var wind = Math.sin(time / 5200) * .5 + Math.sin(time / 1900) * .25;
     ctx.clearRect(0, 0, w, h);
-    drawGalaxy(time);
 
+    // motes in the sunlight, or fireflies at night
     ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    var i, s, y;
-    for (i = 0; i < stars.length; i++) {
-      s = stars[i];
-      if (!reduce) s.y -= s.drift;
-      y = wrapY(s.y, smoothY * s.par);
-      if (y > h + 6) continue;
-      var tw = reduce ? 1 : .6 + .4 * Math.sin(time / 1800 * s.sp + s.ph);
-      ctx.globalAlpha = s.a * tw;
-      ctx.drawImage(s.tex, s.x - s.s / 2, y - s.s / 2, s.s, s.s);
-    }
-    for (i = 0; i < bright.length; i++) {
-      s = bright[i];
-      y = wrapY(s.y, smoothY * s.par);
-      if (y > h + 30) continue;
-      var bt = reduce ? .8 : .62 + .38 * Math.sin(time / 2600 + s.ph);
-      ctx.globalAlpha = .85 * bt;
-      ctx.drawImage(s.tex, s.x - s.s / 2, y - s.s / 2, s.s, s.s);
-      // diffraction spikes
-      ctx.globalAlpha = .30 * bt;
-      ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = .8;
-      ctx.beginPath();
-      ctx.moveTo(s.x - s.s, y); ctx.lineTo(s.x + s.s, y);
-      ctx.moveTo(s.x, y - s.s); ctx.lineTo(s.x, y + s.s);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-
-    if (!reduce) {
-      nextShot -= 16;
-      if (nextShot <= 0) {
-        nextShot = rand(11000, 22000);
-        shots.push({ x: rand(w * .15, w), y: rand(-20, h * .5), vx: -rand(4.5, 8), vy: rand(2.2, 4), life: 1 });
-      }
-      for (i = shots.length - 1; i >= 0; i--) {
-        var sh = shots[i];
-        sh.x += sh.vx; sh.y += sh.vy; sh.life -= .012;
-        if (sh.life <= 0 || sh.y > h + 40) { shots.splice(i, 1); continue; }
-        var tx = sh.x - sh.vx * 14, ty = sh.y - sh.vy * 14;
-        var lg = ctx.createLinearGradient(sh.x, sh.y, tx, ty);
-        lg.addColorStop(0, "rgba(255,255,255," + .8 * sh.life + ")");
-        lg.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.strokeStyle = lg; ctx.lineWidth = 1.7; ctx.lineCap = "round";
-        ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(tx, ty); ctx.stroke();
-      }
+    ctx.globalCompositeOperation = night ? "lighter" : "source-over";
+    for (var j = 0; j < flies.length; j++) {
+      var f = flies[j];
+      f.a += f.turn + Math.sin(time / 1700 + f.ph) * .01;
+      f.x += Math.cos(f.a) * f.sp + wind * .2;
+      f.y += Math.sin(f.a) * f.sp * .7 - (night ? .04 : .1) - ds * .05;
+      if (f.x < -30) f.x = w + 30; if (f.x > w + 30) f.x = -30;
+      if (f.y < -30) f.y = h + 30; if (f.y > h + 30) f.y = -30;
+      var b = .5 + .5 * Math.sin(time * f.blink + f.ph);
+      var a = night ? Math.pow(b, 2.2) : .18 + b * .35;
+      var r = night ? f.r : f.r * .45;
+      ctx.globalAlpha = a;
+      ctx.drawImage(night ? glowNight : glowDay, f.x - r / 2, f.y - r / 2, r, r);
     }
     ctx.restore();
-  }
 
-  if (sky && sky.getContext) {
-    ctx = sky.getContext("2d");
-    seedSky();
+    // falling leaves
+    for (var i = 0; i < leaves.length; i++) {
+      var l = leaves[i];
+      l.y += l.vy - ds * .12 * l.z;
+      l.x += (wind * .6 + .15) * l.z;
+      l.dx = Math.sin(time * l.fr + l.ph) * l.sway;
+      l.rot += l.vr + wind * .004;
+      l.flip += l.vf;
+      // the cursor pushes leaves aside like a breath of wind
+      var mx = l.x + l.dx - mouse.x, my = l.y - mouse.y, d2 = mx * mx + my * my;
+      if (d2 < 16000) {
+        var push = (1 - d2 / 16000) * 2.2;
+        var dd = Math.sqrt(d2) || 1;
+        l.x += mx / dd * push + mouse.vx * .05; l.y += my / dd * push * .6 + mouse.vy * .05;
+        l.vr += (Math.random() - .5) * .01;
+      }
+      l.vr *= .995;
+      if (l.y > h + 40 || l.x > w + 80 || l.x < -80 || l.y < -h * .4) leaves[i] = newLeaf(true);
+      var col = night ? NIGHT_LEAF[l.ci % NIGHT_LEAF.length] : DAY_LEAF[l.ci];
+      drawLeaf(l, col, night ? .55 * l.z : .7 * l.z);
+    }
+    mouse.vx *= .9; mouse.vy *= .9;
+  }
+  if (ctx) {
+    seedNature();
     var rt;
     window.addEventListener("resize", function () {
       clearTimeout(rt);
-      rt = setTimeout(function () { seedSky(); measure(); drawTree(); }, 200);
+      rt = setTimeout(function () { seedNature(); measure(); drawTree(); }, 200);
     });
+    window.addEventListener("pointermove", function (e) {
+      mouse.vx = e.clientX - (mouse.x < -900 ? e.clientX : mouse.x);
+      mouse.vy = e.clientY - (mouse.y < -900 ? e.clientY : mouse.y);
+      mouse.x = e.clientX; mouse.y = e.clientY;
+    }, { passive: true });
+    document.addEventListener("pointerleave", function () { mouse.x = mouse.y = -999; });
   }
+
+  /* =========================================================
+     LIGHT / DARK switch
+     ========================================================= */
+  var themeBtn = document.getElementById("themeBtn");
+  if (themeBtn) themeBtn.addEventListener("click", function () {
+    var root = document.documentElement;
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.classList.add("theme-anim");
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (e) {}
+    setTimeout(function () { root.classList.remove("theme-anim"); }, 800);
+  });
 
   /* =========================================================
      MOTION — one smooth loop drives everything
      ========================================================= */
   var nav = document.getElementById("nav");
   var bar = document.getElementById("progress");
-  var whale = document.getElementById("whaleLayer");
   var heroZoom = document.getElementById("heroZoom");
   var tree = document.getElementById("tree");
 
   window.addEventListener("scroll", function () { targetY = window.pageYOffset; }, { passive: true });
 
-  function whalePos(t) {
-    return { x: 118 - t * 196, y: 24 + Math.sin(t * Math.PI * 1.55) * 27 };
-  }
-  var vel = 0, prevY = targetY, facing = 1, wantFacing = 1;   // 1 = looking left, -1 = looking right
 
   var lastT = performance.now();
   function updateMotion(now) {
@@ -301,36 +196,6 @@
       var hp = Math.min(1, smoothY / (window.innerHeight * 1.1));
       heroZoom.style.transform = "scale(" + (1 - hp * .07) + ") translateY(" + (hp * -20) + "px)";
       heroZoom.style.opacity = String(1 - hp * .6);
-    }
-
-    // scroll direction, smoothed — the whale banks round a curve to turn
-    vel += ((targetY - prevY) - vel) * k(.2);
-    prevY = targetY;
-    if (vel > 1.6) wantFacing = 1; else if (vel < -1.6) wantFacing = -1;
-    facing += (wantFacing - facing) * k(.018);          // slow, so the turn reads as a wide arc
-
-    if (whale && !reduce) {
-      var t = Math.min(1, Math.max(0, (sp - .04) / .88));
-      if (t <= 0 || t >= 1) { whale.style.opacity = 0; }
-      else {
-        var a = whalePos(t), b = whalePos(Math.min(1, t + .008));
-        var dx = (b.x - a.x) * window.innerWidth / 100;
-        var dy = (b.y - a.y) * window.innerHeight / 100;
-        var theta = Math.atan2(dy, dx) * 57.2958;   // travel angle along the path
-        var f = facing;
-        var turn = 1 - Math.abs(f);                 // 0 = settled, 1 = edge-on, mid turn
-        var e = turn * turn * (3 - 2 * turn);       // smoothstep, so the arc eases in and out
-        var bank = wantFacing >= 0 ? -1 : 1;        // constant for the whole turn
-        var rot = theta - 180 + e * 42 * bank;      // leans hard into the curve
-        var depth = Math.sin(t * Math.PI);
-        var sc = (.58 + depth * .78) * (1 - e * .2);
-        var ax = a.x - e * 13 * bank;               // carries on, swings wide, comes back
-        var ay = a.y - e * 12 + e * e * 4;          // rises through the arc, dips out of it
-        whale.style.transform = "translate3d(" + ax.toFixed(2) + "vw," + ay.toFixed(2) + "vh,0) rotate(" + rot.toFixed(2) +
-          "deg) scale(" + (sc * (f >= 0 ? 1 : -1)).toFixed(3) + "," + sc.toFixed(3) + ")";
-        if (!lite) whale.style.filter = "blur(" + ((1 - depth) * 3.2).toFixed(2) + "px)";
-        whale.style.opacity = (.24 + depth * .38).toFixed(3);
-      }
     }
 
     // 3D tilt of the whole line assembly (measured from layout, never from the
@@ -355,7 +220,7 @@
   function loop(time) {
     if (paused) return;
     updateMotion(time);
-    if (ctx) drawSky(time);
+    stepNature(time);
     stepParticles(time);
     requestAnimationFrame(loop);
   }
@@ -377,9 +242,9 @@
         if (eclipse) {
           var r = eclipse.getBoundingClientRect();
           if (r.bottom > 0 && r.top < window.innerHeight) {
-            var dx = (mx - (r.left + r.width / 2)) / r.width;
-            var dy = (my - (r.top + r.height / 2)) / r.height;
-            eclipse.style.transform = "translate3d(" + dx * -14 + "px," + dy * -12 + "px,0) rotateY(" + dx * 6 + "deg) rotateX(" + dy * -6 + "deg)";
+            var dx = Math.max(-1, Math.min(1, (mx - (r.left + r.width / 2)) / r.width));
+            var dy = Math.max(-1, Math.min(1, (my - (r.top + r.height / 2)) / r.height));
+            eclipse.style.transform = "perspective(1200px) translate3d(" + dx * -8 + "px," + dy * -6 + "px,0) rotateY(" + dx * 4 + "deg) rotateX(" + dy * -4 + "deg)";
           }
         }
       });
@@ -442,15 +307,15 @@
     svg.innerHTML = "";
     var defs = el("defs");
     var grad = el("linearGradient", { id: "lineGrad", x1: "0", y1: "0", x2: "0", y2: "1" });
-    grad.appendChild(el("stop", { offset: "0%", "stop-color": "#c9ffe6" }));
-    grad.appendChild(el("stop", { offset: "45%", "stop-color": "#6ee0aa" }));
-    grad.appendChild(el("stop", { offset: "100%", "stop-color": "#2b9a6b" }));
+    grad.appendChild(el("stop", { offset: "0%", "class": "st1" }));
+    grad.appendChild(el("stop", { offset: "45%", "class": "st2" }));
+    grad.appendChild(el("stop", { offset: "100%", "class": "st3" }));
     defs.appendChild(grad);
 
     svg.appendChild(defs);
 
-    spineBase = el("path", { fill: "none", stroke: "rgba(86,214,155,.14)", "stroke-width": "1.4" });
-    spineGlow = el("path", { fill: "none", stroke: "rgba(110,224,170,.16)", "stroke-width": "11", "stroke-linecap": "round" });
+    spineBase = el("path", { "class": "ln-base", fill: "none", stroke: "rgba(86,214,155,.14)", "stroke-width": "1.4" });
+    spineGlow = el("path", { "class": "ln-glow", fill: "none", stroke: "rgba(110,224,170,.16)", "stroke-width": "11", "stroke-linecap": "round" });
     spine = el("path", { fill: "none", stroke: "url(#lineGrad)", "stroke-width": "2.6", "stroke-linecap": "round" });
     gCon = el("g", {});
     gPart = el("g", {});
@@ -460,8 +325,8 @@
     particles = [];
     if (!reduce) {
       for (var i = 0; i < 14; i++) {
-        var halo = el("circle", { r: (i % 4 === 0 ? 8 : 5.5), fill: "#6ee0aa", opacity: "0" });
-        var c = el("circle", { r: (i % 4 === 0 ? 2.6 : 1.6), fill: i % 3 === 0 ? "#c9ffe6" : "#9bffcf", opacity: "0" });
+        var halo = el("circle", { "class": "ln-pth", r: (i % 4 === 0 ? 8 : 5.5), fill: "#6ee0aa", opacity: "0" });
+        var c = el("circle", { "class": "ln-pt", r: (i % 4 === 0 ? 2.6 : 1.6), fill: i % 3 === 0 ? "#c9ffe6" : "#9bffcf", opacity: "0" });
         gPart.appendChild(halo); gPart.appendChild(c);
         particles.push({ el: c, halo: halo, p: Math.random(), sp: 0.00007 + Math.random() * 0.00012 });
       }
@@ -530,8 +395,8 @@
   function setPath(key, d, op) {
     var pair = conMap[key];
     if (!pair) {
-      var halo = el("path", { fill: "none", stroke: "rgba(110,224,170,.13)", "stroke-width": "7", "stroke-linecap": "round", opacity: op });
-      var path = el("path", { fill: "none", stroke: "rgba(155,255,207,.75)", "stroke-width": "1.5", "stroke-linecap": "round", opacity: op });
+      var halo = el("path", { "class": "ln-halo", fill: "none", stroke: "rgba(110,224,170,.13)", "stroke-width": "7", "stroke-linecap": "round", opacity: op });
+      var path = el("path", { "class": "ln-con", fill: "none", stroke: "rgba(155,255,207,.75)", "stroke-width": "1.5", "stroke-linecap": "round", opacity: op });
       gCon.appendChild(halo); gCon.appendChild(path);
       halo.setAttribute("d", d); path.setAttribute("d", d);
       pair = { halo: halo, path: path };
@@ -1039,7 +904,6 @@
   }
   window.addEventListener("load", function () { measure(); drawTree(); });
   updateMotion();
-  if (ctx) drawSky(0);
   if (reduce) window.addEventListener("scroll", function () { targetY = window.pageYOffset; updateMotion(); }, { passive: true });
   else requestAnimationFrame(loop);
 })();

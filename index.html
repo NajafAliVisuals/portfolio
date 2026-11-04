@@ -9,84 +9,34 @@
 <meta property="og:description" content="Social video, real-estate films, AI video, motion animation and UGC ads. 5+ years, 100+ clients.">
 <meta property="og:image" content="assets/najaf-portrait.jpg">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#05060b">
+<meta name="theme-color" content="#f5f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d0c" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Sora:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script>
+  /* light / dark — remembered per visitor, otherwise follows their device */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("theme"); } catch (e) {}
+    if (t !== "light" && t !== "dark") t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- deep sky: galaxy + starfield -->
-<canvas id="sky" aria-hidden="true"></canvas>
-<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
-<div class="torch" id="torch" aria-hidden="true"></div>
-
-<!-- cosmic whale, swims across on scroll -->
-<div class="whale-layer" id="whaleLayer" aria-hidden="true">
-  <span class="whale-aura"></span>
-  <svg class="whale" viewBox="0 0 540 280" fill="none">
-    <defs>
-      <linearGradient id="wbody" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stop-color="#8fa3b8" stop-opacity=".34"/>
-        <stop offset="46%"  stop-color="#5f7f86" stop-opacity=".30"/>
-        <stop offset="78%"  stop-color="#3f8a6c" stop-opacity=".30"/>
-        <stop offset="100%" stop-color="#e8ddc9" stop-opacity=".42"/>
-      </linearGradient>
-      <linearGradient id="wfin" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#e8ddc9" stop-opacity=".34"/>
-        <stop offset="100%" stop-color="#56d69b" stop-opacity=".26"/>
-      </linearGradient>
-      <radialGradient id="wsheen" cx="30%" cy="28%" r="70%">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity=".22"/>
-        <stop offset="60%" stop-color="#ffffff" stop-opacity="0"/>
-      </radialGradient>
-      <filter id="wglow" filterUnits="userSpaceOnUse" x="-300" y="-300" width="1200" height="900">
-        <feGaussianBlur stdDeviation="9" result="b"/>
-        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-
-    <g>
-      <g class="w-body">
-        <path class="w-hull" fill="url(#wbody)" d="M46 104 C62 72 102 58 160 58 C224 58 302 76 358 104
-          C386 118 406 128 418 134 C406 142 386 152 358 166 C302 194 224 204 160 200
-          C102 196 62 172 46 138 C33 122 33 120 46 104 Z"/>
-        <path fill="url(#wsheen)" d="M46 104 C62 72 102 58 160 58 C224 58 302 76 358 104 C300 96 220 92 150 96 C104 99 68 101 46 104 Z"/>
-        <path class="w-dorsal" fill="url(#wbody)" d="M292 76 C302 56 320 46 336 46 C320 58 310 68 304 84 Z"/>
-        <path class="w-fin" fill="url(#wfin)" d="M168 178 C163 210 182 244 222 262 C199 230 187 204 190 180 Z"/>
-        <g stroke="#e8ddc9" stroke-opacity=".22" stroke-width="1.2" fill="none">
-          <path d="M52 132 C86 152 130 166 176 172"/>
-          <path d="M60 146 C94 164 134 176 172 182"/>
-          <path d="M50 118 C80 130 116 138 152 142"/>
-          <path d="M44 112 C70 122 104 130 140 134"/>
-        </g>
-        <circle cx="74" cy="100" r="4.4" fill="#f7f8fa" fill-opacity=".85"/>
-        <circle cx="72.5" cy="98.5" r="1.4" fill="#fff"/>
-        <g class="w-spark">
-          <circle cx="180" cy="92"  r="1.7" fill="#fff" fill-opacity=".55"/>
-          <circle cx="252" cy="104" r="1.9" fill="#e8ddc9" fill-opacity=".6"/>
-          <circle cx="318" cy="120" r="1.4" fill="#9bffcf" fill-opacity=".65"/>
-          <circle cx="214" cy="140" r="1.3" fill="#fff" fill-opacity=".45"/>
-          <circle cx="286" cy="86"  r="1.2" fill="#e8ddc9" fill-opacity=".5"/>
-        </g>
-      </g>
-
-      <g class="w-tail">
-        <path fill="url(#wbody)" d="M412 134 C440 114 476 100 520 92 C492 112 464 124 450 134
-          C464 144 484 158 506 180 C470 168 438 152 412 134 Z"/>
-      </g>
-
-      <g class="w-dust">
-        <circle cx="470" cy="150" r="2" fill="#9bffcf" fill-opacity=".5"/>
-        <circle cx="496" cy="128" r="1.4" fill="#e8ddc9" fill-opacity=".45"/>
-        <circle cx="512" cy="164" r="1.7" fill="#fff" fill-opacity=".35"/>
-        <circle cx="486" cy="184" r="1.2" fill="#9bffcf" fill-opacity=".4"/>
-      </g>
-    </g>
-  </svg>
+<!-- nature: sunlight through leaves, mist, falling leaves / fireflies -->
+<div class="nature" aria-hidden="true">
+  <span class="sunlight"></span>
+  <span class="rays"></span>
+  <span class="komorebi"></span>
+  <div class="mist"><span></span><span></span></div>
 </div>
+<canvas id="natureCanvas" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
 <a class="skip" href="#main">Skip to content</a>
@@ -100,6 +50,10 @@
     <a href="#journey" data-open="packages">Packages</a>
     <a href="#about">About</a>
   </nav>
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch light or dark mode">
+    <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+    <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8z"/></svg>
+  </button>
   <button class="btn btn-solid nav-cta" type="button" data-cta>Start a project</button>
   <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
 </header>
@@ -124,18 +78,17 @@
   <section class="hero" id="top">
     <div class="hero-inner" id="heroZoom">
       <figure class="eclipse" id="eclipse">
-        <span class="ring ring-1"></span>
-        <span class="ring ring-2"></span>
-        <span class="halo"></span>
         <span class="portrait">
           <img src="assets/najaf-portrait.jpg" alt="Portrait of Najaf Ali" width="900" height="1124">
-          <span class="sheen"></span>
+          <span class="warm-light" aria-hidden="true"></span>
+          <span class="leaf-shadow" aria-hidden="true"></span>
         </span>
+        <span class="portrait-tag glass"><svg class="leaf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19l7-7"/></svg>Islamabad · working worldwide</span>
       </figure>
       <div class="hero-copy">
         <p class="status"><span class="status-dot" aria-hidden="true"></span> Available for new projects</p>
         <p class="hero-role reveal">Video editor · AI video producer · Content creator</p>
-        <h1 class="hero-title"><span class="w">Cut</span> <span class="w">so</span> <span class="w">people</span><br><span class="w">actually</span> <span class="w">finish</span><br><span class="w">watching.</span></h1>
+        <h1 class="hero-title"><span class="w">Cut</span> <span class="w">so</span> <span class="w">people</span><br><span class="w">actually</span> <span class="w serif">finish</span><br><span class="w">watching.</span></h1>
         <p class="lede reveal d2">Five years of cutting social video, property films, AI production, motion animation and UGC — plus the parts most editors hand back: the thumbnail, the captions, the vertical cut, and the shot that never got filmed.</p>
         <div class="hero-actions reveal d3">
           <a class="btn btn-solid" href="#journey" data-open="work">See the work</a>

@@ -6,7 +6,7 @@ Drop it on GitHub Pages and it runs.
 ```
 index.html      the page
 styles.css      all styling
-app.js          galaxy, the glowing line, branches, video player
+app.js          nature effects, light/dark, the glowing line, video player
 videos.js       >>> the only file you edit to add videos <<<
 assets/         portrait, gallery photo, CV, favicon
 .nojekyll       tells GitHub Pages to serve the files as-is
@@ -105,31 +105,26 @@ still see the old version.
 - **Mobile action bar** — on phones, WhatsApp and Email sit fixed at the bottom of
   the screen, so a client is never more than one tap from contacting you.
 
-## What moves on the page
+## Look and what moves on the page
 
-- **Galaxy** — a real 3D spiral galaxy: three arms in a tilted disc with nebula
-  clouds, inner stars rotating faster than the rim, and the camera pushing in and
-  drifting as you scroll, so it feels like flying toward it. Everything is eased,
-  so motion stays smooth instead of snapping to the scrollbar.
-- **3D line** — the whole line-and-branch assembly tilts in real 3D as it passes
-  through the screen, and the cards sit above the line in depth.
-- **Starfield** — three depth layers with parallax, twinkle, bloom on the brightest
-  stars, and a shooting star every 10–20 seconds.
-- **The line** — draws itself as you scroll, with green light particles travelling
-  along it, and branch lines that draw out when a point is opened.
-- **Whale** — a large cosmic whale swims right to left across the page on scroll:
-  its body undulates, the flukes beat, the flipper sweeps, it banks into the turn,
-  and it goes soft-focus when it swims further away. Scroll down and it swims left,
-  facing left; scroll up and it banks round a wide curve, rises through the turn and
-  comes back facing right.
-- **Zoom** — the hero scales back and fades as you leave it; thumbnails and cards
-  lift and zoom on hover.
-- **Light** — slow aurora clouds in sand and green, plus a soft glow that follows
-  the cursor on desktop.
-- **Portrait** — orbiting rings, a breathing halo, a light sweep across the photo,
-  and a gentle tilt toward the cursor.
-- Everything switches off automatically for visitors who have "reduce motion"
-  turned on in their system settings.
+Clean, minimal, Apple-style, with a nature feel. Fonts: Inter, with Instrument Serif
+for the one italic word in the headline.
+
+- **Light / dark switch** — the sun/moon button in the top bar. The site starts in
+  whatever the visitor's device uses and remembers their choice after that.
+- **Sunlight through leaves** — soft leaf shadows sway over the page and over both
+  photos, with warm light rays in the top corner and slow mist along the bottom.
+  The leaf shapes live in `assets/leaves.svg`.
+- **Falling leaves** — a few leaves drift down, tumble and get pushed aside by the
+  cursor. Scrolling lifts them a little.
+- **Day vs night** — in light mode, golden motes float in the sunlight; in dark mode
+  they become glowing fireflies.
+- **The line** — still draws itself as you scroll, with light particles running
+  along it. Its colours follow the light/dark theme.
+- **Headline** — words blur in one by one; sections fade up as you reach them;
+  the portrait tilts gently toward the cursor.
+
+The old space design (galaxy, whale) is saved on the `backup-space-theme` branch.
 
 ## The "Start a project" button
 
