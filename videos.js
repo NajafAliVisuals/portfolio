@@ -43,6 +43,9 @@ const WORK = [
     name: "Social media videos",
     blurb: "Feed-first edits, Shorts, Reels and long-form — including AI-generated pieces.",
     videos: [
+      { url: "https://youtube.com/shorts/oXZVLBH6vYE", title: "Tom Talks Success — Isaac Toledano (podcast)" },
+      { url: "https://youtube.com/shorts/E6yn28YC558", title: "Lifestyle Brand to a Billion-Dollar Exit — Sam Nazarian (podcast)" },
+      { url: "https://youtube.com/shorts/iddHqjPN5Bk", title: "Industry Game — Gil Dezer (podcast)" },
       { url: "https://www.youtube.com/watch?v=dYm-4t_wx6A", title: "Once You Understand Debt — Veen Vox" },
       { url: "https://youtube.com/shorts/SrFsBqcDr8E", title: "Podcast reel" },
       { url: "https://youtube.com/shorts/lhLC8rV7KCw", title: "B360" },
