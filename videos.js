@@ -46,8 +46,7 @@ const WORK = [
     videos: [
       { url: "https://youtube.com/shorts/oXZVLBH6vYE", title: "Tom Talks Success — Isaac Toledano" },
       { url: "https://youtube.com/shorts/E6yn28YC558", title: "Lifestyle Brand to a Billion-Dollar Exit — Sam Nazarian" },
-      { url: "https://youtube.com/shorts/iddHqjPN5Bk", title: "Industry Game — Gil Dezer" },
-      { url: "https://youtube.com/shorts/SrFsBqcDr8E", title: "Podcast reel" }
+      { url: "https://youtube.com/shorts/iddHqjPN5Bk", title: "Industry Game — Gil Dezer" }
     ]
   },
   {
