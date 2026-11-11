@@ -863,6 +863,24 @@
   });
 
   /* =========================================================
+     3D & 360° ROOM — loads the viewer only when asked
+     ========================================================= */
+  (function () {
+    var btn = document.getElementById("spacePlay");
+    var stage = document.getElementById("spaceStage");
+    if (!btn || !stage) return;
+    btn.addEventListener("click", function () {
+      var f = document.createElement("iframe");
+      f.src = "https://njx545.github.io/ground-floor-interior-360/";
+      f.title = "Ground Floor Living — 360° interior tour";
+      f.setAttribute("allow", "fullscreen; accelerometer; gyroscope; xr-spatial-tracking");
+      f.setAttribute("allowfullscreen", "");
+      f.setAttribute("loading", "eager");
+      btn.replaceWith(f);
+    });
+  })();
+
+  /* =========================================================
      INTRO VIDEO — plays right inside the page
      ========================================================= */
   (function () {

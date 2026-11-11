@@ -104,6 +104,7 @@ const WORK = [
     blurb: "2D and 3D animation, SaaS product explainers and motion graphics.",
     videos: [
       { url: "https://youtu.be/ALAV23pM_Tw", title: "Keytomic — SaaS animation" },
+      { url: "https://youtube.com/shorts/y1Wk-uapERY", title: "Mountain Scene — Tommaso Fattovich (3D)" },
       { url: "https://www.youtube.com/watch?v=dYm-4t_wx6A", title: "Once You Understand Debt — Veen Vox (animated explainer)" },
       { url: "https://www.youtube.com/shorts/n_PKaSt9at4", title: "Thrown in a Well by His Own Brothers — SMALLNUNU (2D animation)" }
     ]

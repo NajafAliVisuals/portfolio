@@ -17,6 +17,13 @@ assets/         portrait, gallery photo, CV, favicon
 The big video under your photo comes from `INTRO` at the top of `videos.js`.
 Paste a new link and title there to change it. It plays right inside the page.
 
+## 0b. The 3D & 360° room
+
+The "Walk through it" section shows `assets/room360-poster.jpg`. Clicking it opens the
+360° tour (https://njx545.github.io/ground-floor-interior-360/) right inside the page.
+To change the room, swap the poster image and the link in `index.html` (section `#spaces`)
+and in `app.js` ("3D & 360° ROOM").
+
 ## 1. Add your YouTube links
 
 Open `videos.js`. Each category has a `videos` list. Add one line per video:
@@ -28,7 +35,7 @@ Open `videos.js`. Each category has a `videos` list. Add one line per video:
 Any YouTube link works — `watch?v=`, `youtu.be/` or `shorts/`.
 
 Categories in place: Podcast clips (3), Social media videos (17), UGC ads (5),
-Ads & commercials (6), Motion animation — 2D, 3D & SaaS (3), Real-estate videos (2),
+Ads & commercials (6), Motion animation — 2D, 3D & SaaS (4), Real-estate videos (2),
 AI video (1).
 
 - The shape is worked out from the link: `/shorts/` links show vertically (9:16),
