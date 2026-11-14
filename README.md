@@ -35,7 +35,7 @@ Open `videos.js`. Each category has a `videos` list. Add one line per video:
 Any YouTube link works — `watch?v=`, `youtu.be/` or `shorts/`.
 
 Categories in place: Podcast clips (3), Social media videos (17), UGC ads (5),
-Ads & commercials (6), Motion animation — 2D, 3D & SaaS (4), Real-estate videos (2),
+Ads & commercials (6), Motion animation — 2D, 3D & SaaS (5), Real-estate videos (2),
 AI video (1).
 
 - The shape is worked out from the link: `/shorts/` links show vertically (9:16),
