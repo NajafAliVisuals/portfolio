@@ -41,12 +41,15 @@ const INTRO = {
 const WORK = [
   {
     id: "podcast",
-    name: "Podcast clips",
-    blurb: "Podcast and interview cuts — hooks, captions and pacing that keep people watching.",
+    name: "Podcast shorts & intro",
+    blurb: "Podcast and interview cuts — hooks, captions and pacing that keep people watching, plus show intros.",
     videos: [
+      { url: "https://youtu.be/PGvGAlvgL2M", title: "Podcast intro" },
       { url: "https://youtube.com/shorts/oXZVLBH6vYE", title: "Tom Talks Success — Isaac Toledano" },
       { url: "https://youtube.com/shorts/E6yn28YC558", title: "Lifestyle Brand to a Billion-Dollar Exit — Sam Nazarian" },
-      { url: "https://youtube.com/shorts/iddHqjPN5Bk", title: "Industry Game — Gil Dezer" }
+      { url: "https://youtube.com/shorts/iddHqjPN5Bk", title: "Industry Game — Gil Dezer" },
+      { url: "https://youtube.com/shorts/_xoKcWx-MyY", title: "Podcast short — 01" },
+      { url: "https://youtube.com/shorts/-sDV3GxRjJc", title: "Podcast short — 02" }
     ]
   },
   {
